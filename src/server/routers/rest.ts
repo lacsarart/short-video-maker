@@ -10,6 +10,7 @@ import { validateCreateShortInput } from "../validator";
 import { ShortCreator } from "../../short-creator/ShortCreator";
 import { logger } from "../../logger";
 import { Config } from "../../config";
+import { generateScriptWithAI } from "../aiScriptGenerator";
 
 // todo abstract class
 export class APIRouter {
@@ -23,11 +24,40 @@ export class APIRouter {
     this.shortCreator = shortCreator;
 
     this.router.use(express.json());
+    this.router.use(express.urlencoded({ extended: false }));
 
     this.setupRoutes();
   }
 
   private setupRoutes() {
+    this.router.post(
+      "/ai-script",
+      async (req: ExpressRequest, res: ExpressResponse) => {
+        const { topic } = req.body as { topic?: string };
+        if (!topic || typeof topic !== "string" || !topic.trim()) {
+          res.status(400).json({ error: "topic is required" });
+          return;
+        }
+        if (!process.env.ANTHROPIC_API_KEY) {
+          res
+            .status(503)
+            .json({ error: "ANTHROPIC_API_KEY is not configured on the server" });
+          return;
+        }
+        try {
+          logger.info({ topic }, "Generating AI script");
+          const script = await generateScriptWithAI(topic.trim());
+          res.status(200).json(script);
+        } catch (error: unknown) {
+          logger.error(error, "Error generating AI script");
+          res.status(500).json({
+            error: "Failed to generate script",
+            message: error instanceof Error ? error.message : "Unknown error",
+          });
+        }
+      },
+    );
+
     this.router.post(
       "/short-video",
       async (req: ExpressRequest, res: ExpressResponse) => {

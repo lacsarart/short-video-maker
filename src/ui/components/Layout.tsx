@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import VideoIcon from '@mui/icons-material/VideoLibrary';
 import AddIcon from '@mui/icons-material/Add';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -51,12 +52,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               Short Video Maker
             </Typography>
-            <Button 
-              color="inherit" 
+            <Button
+              color="inherit"
+              startIcon={<AutoAwesomeIcon />}
+              onClick={() => navigate('/ai-create')}
+              sx={{ mr: 1 }}
+            >
+              AI Create
+            </Button>
+            <Button
+              color="inherit"
               startIcon={<AddIcon />}
               onClick={() => navigate('/create')}
             >
-              Create Video
+              Manual
             </Button>
           </Toolbar>
         </AppBar>
