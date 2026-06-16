@@ -1,0 +1,11 @@
+[build]
+dockerfilePath = "main.Dockerfile"
+
+[deploy]
+startCommand = "node dist/index.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+
+[[services]]
+name = "short-video-maker"
